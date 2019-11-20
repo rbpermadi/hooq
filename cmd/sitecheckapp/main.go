@@ -18,6 +18,7 @@ func main() {
 	}
 
 	go siteCheckApp.Loop()
+	http.HandleFunc("/", siteCheckApp.HomePageHandler)
 	http.HandleFunc("/site_check", siteCheckApp.GetSiteCheckHandler)
 	http.HandleFunc("/site_check/add", siteCheckApp.AddSiteCheckHandler)
 	log.Fatal(http.ListenAndServe("localhost:7171", nil))

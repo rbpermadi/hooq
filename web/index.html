@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hooq Test</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container h-100">
+      <h1 class="text-center">Hooq Test</h1>
+      <div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group row">
+              <div class="col-9">
+                <input type="text" onkeyup="return runScript(event)" class="form-control" value="" id="site_url" placeholder="Please type site url here"></input>
+              </div>
+              <div class="col-3">
+                <button type="submit" class="btn btn-primary col-12" onclick="add()">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Site Url</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="site_tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var xhttp = new XMLHttpRequest();
+      setInterval(get_site_list, 300000)
+
+      function add() {
+        var site_url = document.getElementById("site_url")
+        var payload = {
+          link: site_url.value
+        }
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 201) {
+              get_site_list();
+            }
+        }
+        xhttp.open("POST", "http://localhost:7171/site_check/add", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify(payload));
+        // socket.send(JSON.stringify(messageDetails));
+        site_url.value = "";
+      }
+
+      function get_site_list() {
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            response = JSON.parse(xhttp.responseText);
+            var content = '';
+
+            for (var i = 0; i < response.data.length; i++) {
+              content += '<tr>';
+              content += '<th scope="row">' + response.data[i].id + '</th>';
+              content += '<td>' + response.data[i].link + '</td>';
+              content += '<td>' + response.data[i].status + '</td>';
+              content += '</tr>';
+            }
+
+            document.getElementById("site_tbody").innerHTML = content
+          }
+        }
+        xhttp.open("GET", "http://localhost:7171/site_check", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+      }
+
+      function runScript(e) {
+          //See notes about 'which' and 'key'
+          if (e.keyCode == 13) {
+              add()
+
+              return true
+          }
+
+          return false
+      }
+    </script>
+  </body>
+</html>

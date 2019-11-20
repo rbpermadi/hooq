@@ -53,6 +53,10 @@ func (index *Index) AddSiteCheckHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(response)
 }
 
+func (index *Index) HomePageHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "web/index.html")
+}
+
 func (index *Index) Loop() {
 	for {
 		sites := index.SiteRepo.All()
