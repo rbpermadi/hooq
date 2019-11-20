@@ -15,7 +15,7 @@ func Check(url string) string {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		return "unhealty"
+		return "unhealthy"
 	}
 
 	return "healthy"
