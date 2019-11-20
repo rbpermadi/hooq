@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/rbpermadi/hooq/internal/repository"
+	"github.com/rbpermadi/hooq/pkg/sitecheck"
+	"github.com/rbpermadi/hooq_test1/pkg/site_check"
 )
 
 type Index struct {
@@ -37,7 +40,7 @@ func (index *Index) AddSiteCheckHandler(w http.ResponseWriter, r *http.Request) 
 		log.Println("Error while reading JSON ", err.Error())
 	}
 
-	newSite.Status = "unchecked"
+	newSite.Status = sitecheck.Check(newSite.Link)
 
 	site := index.SiteRepo.Create(newSite)
 
@@ -48,4 +51,15 @@ func (index *Index) AddSiteCheckHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(response)
+}
+
+func (index *Index) Loop() {
+	for {
+		sites := index.SiteRepo.All()
+		for idx, site := range sites {
+			site.Status = site_check.Check(site.Link)
+			index.SiteRepo.Update(idx, site)
+		}
+		time.Sleep(5 * time.Minute)
+	}
 }
