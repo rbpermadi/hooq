@@ -38,92 +38,91 @@
           </div>
         </div>
       </div>
-    </div>
-    <script>
-      var xhttp = new XMLHttpRequest();
-      setInterval(get_site_list, 300000)
-
-      function add() {
-        var site_url = document.getElementById("site_url")
-        var payload = {
-          link: site_url.value
-        }
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 201) {
-              get_site_list();
-            }
-        }
-        xhttp.open("POST", "http://localhost:7171/site_check/add", true);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send(JSON.stringify(payload));
-        site_url.value = "";
-      }
-
-      function get_site_list() {
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            response = JSON.parse(xhttp.responseText);
-            var content = '';
-
-            for (var i = 0; i < response.data.length; i++) {
-              content += '<tr>';
-              content += '<th scope="row">' + response.data[i].id + '</th>';
-              content += '<td>' + response.data[i].link + '</td>';
-              content += '<td>' + response.data[i].status + '</td>';
-              content += '<td><label onclick="delete_site(' + response.data[i].id + ')">delete</label></td>';
-              content += '</tr>';
-            }
-
-            document.getElementById("site_tbody").innerHTML = content
+    </div><script>
+        var xhttp = new XMLHttpRequest();
+        setInterval(get_site_list, 300000)
+  
+        function add() {
+          var site_url = document.getElementById("site_url")
+          var payload = {
+            link: site_url.value
           }
+          xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 201) {
+                get_site_list();
+              }
+          }
+          xhttp.open("POST", "http://localhost:7171/site_check/add", true);
+          xhttp.setRequestHeader("Content-type", "application/json");
+          xhttp.send(JSON.stringify(payload));
+          site_url.value = "";
         }
-        xhttp.open("GET", "http://localhost:7171/site_check", true);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send();
-      }
-
-      function delete_site(id) {
-        xhttp.onreadystatechange = function() {
+  
+        function get_site_list() {
+          xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-              get_site_list();
+              response = JSON.parse(xhttp.responseText);
+              var content = '';
+  
+              for (var i = 0; i < response.data.length; i++) {
+                content += '<tr>';
+                content += '<th scope="row">' + response.data[i].id + '</th>';
+                content += '<td>' + response.data[i].link + '</td>';
+                content += '<td>' + response.data[i].status + '</td>';
+                content += '<td><label onclick="delete_site(' + response.data[i].id + ')">delete</label></td>';
+                content += '</tr>';
+              }
+  
+              document.getElementById("site_tbody").innerHTML = content
             }
+          }
+          xhttp.open("GET", "http://localhost:7171/site_check", true);
+          xhttp.setRequestHeader("Content-type", "application/json");
+          xhttp.send();
         }
-        xhttp.open("POST", "http://localhost:7171/site_check/delete?id=" + id, true);
-        xhttp.send();
-      }
-
-      function get_site_list() {
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            response = JSON.parse(xhttp.responseText);
-            var content = '';
-
-            for (var i = 0; i < response.data.length; i++) {
-              content += '<tr>';
-              content += '<th scope="row">' + response.data[i].id + '</th>';
-              content += '<td>' + response.data[i].link + '</td>';
-              content += '<td>' + response.data[i].status + '</td>';
-              content += '<td><label onclick="delete(' + response.data[i].id + ')">delete</label></td>';
-              content += '</tr>';
+  
+        function delete_site(id) {
+          xhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                get_site_list();
+              }
+          }
+          xhttp.open("POST", "http://localhost:7171/site_check/delete?id=" + id, true);
+          xhttp.send();
+        }
+  
+        function get_site_list() {
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              response = JSON.parse(xhttp.responseText);
+              var content = '';
+  
+              for (var i = 0; i < response.data.length; i++) {
+                content += '<tr>';
+                content += '<th scope="row">' + response.data[i].id + '</th>';
+                content += '<td>' + response.data[i].link + '</td>';
+                content += '<td>' + response.data[i].status + '</td>';
+                content += '<td><label onclick="delete_site(' + response.data[i].id + ')">delete</label></td>';
+                content += '</tr>';
+              }
+  
+              document.getElementById("site_tbody").innerHTML = content
             }
-
-            document.getElementById("site_tbody").innerHTML = content
           }
+          xhttp.open("GET", "http://localhost:7171/site_check", true);
+          xhttp.setRequestHeader("Content-type", "application/json");
+          xhttp.send();
         }
-        xhttp.open("GET", "http://localhost:7171/site_check", true);
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.send();
-      }
-
-      function runScript(e) {
-          if (e.keyCode == 13) {
-              add()
-
-              return true
-          }
-
-          return false
-      }
-    </script>
+  
+        function runScript(e) {
+            if (e.keyCode == 13) {
+                add()
+  
+                return true
+            }
+  
+            return false
+        }
+      </script>
   </body>
 </html>

@@ -126,10 +126,6 @@ func (index *Index) DeleteSiteCheckHandler(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(response)
 }
 
-func (index *Index) HomePageHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "web/index.html")
-}
-
 func (index *Index) Loop() {
 	for {
 		sites := index.SiteRepo.All()

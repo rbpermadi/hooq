@@ -18,7 +18,9 @@ func main() {
 	}
 
 	go siteCheckApp.Loop()
-	http.HandleFunc("/", siteCheckApp.HomePageHandler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/index.html")
+	})
 	http.HandleFunc("/site_check", siteCheckApp.GetSiteCheckHandler)
 	http.HandleFunc("/site_check/add", siteCheckApp.AddSiteCheckHandler)
 	http.HandleFunc("/site_check/delete", siteCheckApp.DeleteSiteCheckHandler)
