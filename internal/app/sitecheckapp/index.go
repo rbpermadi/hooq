@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/rbpermadi/hooq/internal/repository"
@@ -17,6 +19,11 @@ type Index struct {
 
 type Response struct {
 	Data interface{} `json:"data"`
+}
+
+type ResponseError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 func (index *Index) GetSiteCheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +45,30 @@ func (index *Index) AddSiteCheckHandler(w http.ResponseWriter, r *http.Request) 
 
 	if err != nil {
 		log.Println("Error while reading JSON ", err.Error())
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		response := ResponseError{
+			Code:    400,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	_, err = url.ParseRequestURI(newSite.Link)
+
+	if err != nil {
+		log.Println("Error url validation : ", err.Error())
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		response := ResponseError{
+			Code:    400,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+
+		return
 	}
 
 	newSite.Status = sitecheck.Check(newSite.Link)
@@ -53,6 +84,48 @@ func (index *Index) AddSiteCheckHandler(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(response)
 }
 
+func (index *Index) DeleteSiteCheckHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		response := ResponseError{
+			Code:    400,
+			Message: "Id must not null",
+		}
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	err = index.SiteRepo.Delete(id)
+
+	if err != nil {
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		response := ResponseError{
+			Code:    404,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(response)
+
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	response := struct {
+		Message string `json:"message"`
+	}{
+		Message: "site has successfully deleted",
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
 func (index *Index) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "web/index.html")
 }
@@ -60,10 +133,11 @@ func (index *Index) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 func (index *Index) Loop() {
 	for {
 		sites := index.SiteRepo.All()
-		for idx, site := range sites {
+		for _, site := range sites {
 			site.Status = site_check.Check(site.Link)
-			index.SiteRepo.Update(idx, site)
+			index.SiteRepo.Update(site.ID, site)
 		}
+
 		time.Sleep(5 * time.Minute)
 	}
 }
