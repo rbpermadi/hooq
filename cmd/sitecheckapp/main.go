@@ -21,5 +21,6 @@ func main() {
 	http.HandleFunc("/", siteCheckApp.HomePageHandler)
 	http.HandleFunc("/site_check", siteCheckApp.GetSiteCheckHandler)
 	http.HandleFunc("/site_check/add", siteCheckApp.AddSiteCheckHandler)
+	http.HandleFunc("/site_check/delete", siteCheckApp.DeleteSiteCheckHandler)
 	log.Fatal(http.ListenAndServe("localhost:7171", nil))
 }
