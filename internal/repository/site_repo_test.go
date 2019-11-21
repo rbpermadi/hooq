@@ -70,9 +70,8 @@ func TestSiteRepo_Update(t *testing.T) {
 
 	site.Status = "unhealhty"
 
-	// test when data not null
 	t.Run("success", func(t *testing.T) {
-		updateResult, err := siteRepo.Update(0, *site)
+		updateResult, err := siteRepo.Update(site.ID, *site)
 
 		if err != nil {
 			t.Errorf("Update() failed, expected %v, got %v", "nil", err)
@@ -83,7 +82,6 @@ func TestSiteRepo_Update(t *testing.T) {
 		}
 	})
 
-	// test when data null
 	t.Run("data not found", func(t *testing.T) {
 		_, err := siteRepo.Update(10, *site)
 
@@ -93,6 +91,37 @@ func TestSiteRepo_Update(t *testing.T) {
 
 		if err.Error() != "Site not found" {
 			t.Errorf("Update() failed, expected %v, got %v", "Site not found", err.Error())
+		}
+	})
+}
+
+func TestSiteRepo_Delete(t *testing.T) {
+	siteRepo := repository.SiteRepo{}
+
+	newSite := repository.Site{
+		Link:   "http://google.com",
+		Status: "healthy",
+	}
+
+	site := siteRepo.Create(newSite)
+
+	t.Run("success", func(t *testing.T) {
+		err := siteRepo.Delete(site.ID)
+
+		if err != nil {
+			t.Errorf("Delete() failed, expected %v, got %v", "nil", err)
+		}
+	})
+
+	t.Run("data not found", func(t *testing.T) {
+		err := siteRepo.Delete(10)
+
+		if err == nil {
+			t.Errorf("Delete() failed, expected %v, got %v", "not nil", err)
+		}
+
+		if err.Error() != "Site not found" {
+			t.Errorf("Delete() failed, expected %v, got %v", "Site not found", err.Error())
 		}
 	})
 }

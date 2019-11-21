@@ -31,12 +31,34 @@ func (siteRepo *SiteRepo) Create(site Site) *Site {
 	return &site
 }
 
-func (siteRepo *SiteRepo) Update(index int, site Site) (*Site, error) {
-	if index > len(siteRepo.Sites) {
-		return nil, fmt.Errorf("Site not found")
+func (siteRepo *SiteRepo) Update(id int, site Site) (*Site, error) {
+	for i := range siteRepo.Sites {
+		if siteRepo.Sites[i].ID == id {
+			siteRepo.Sites[i] = site
+			return &site, nil
+		}
 	}
 
-	siteRepo.Sites[index] = site
+	return nil, fmt.Errorf("Site not found")
+}
 
-	return &site, nil
+func (siteRepo *SiteRepo) Delete(id int) error {
+	sites := []Site{}
+	status := false
+
+	for i := range siteRepo.Sites {
+		if siteRepo.Sites[i].ID == id {
+			status = true
+		} else {
+			sites = append(sites, siteRepo.Sites[i])
+		}
+	}
+
+	if status == false {
+		return fmt.Errorf("Site not found")
+	}
+
+	siteRepo.Sites = sites
+
+	return nil
 }
