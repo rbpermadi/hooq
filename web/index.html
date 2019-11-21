@@ -26,9 +26,10 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
+                  <th scope="col">ID</th>
                   <th scope="col">Site Url</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody id="site_tbody">
@@ -55,7 +56,6 @@
         xhttp.open("POST", "http://localhost:7171/site_check/add", true);
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.send(JSON.stringify(payload));
-        // socket.send(JSON.stringify(messageDetails));
         site_url.value = "";
       }
 
@@ -70,6 +70,40 @@
               content += '<th scope="row">' + response.data[i].id + '</th>';
               content += '<td>' + response.data[i].link + '</td>';
               content += '<td>' + response.data[i].status + '</td>';
+              content += '<td><label onclick="delete_site(' + response.data[i].id + ')">delete</label></td>';
+              content += '</tr>';
+            }
+
+            document.getElementById("site_tbody").innerHTML = content
+          }
+        }
+        xhttp.open("GET", "http://localhost:7171/site_check", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+      }
+
+      function delete_site(id) {
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              get_site_list();
+            }
+        }
+        xhttp.open("POST", "http://localhost:7171/site_check/delete?id=" + id, true);
+        xhttp.send();
+      }
+
+      function get_site_list() {
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            response = JSON.parse(xhttp.responseText);
+            var content = '';
+
+            for (var i = 0; i < response.data.length; i++) {
+              content += '<tr>';
+              content += '<th scope="row">' + response.data[i].id + '</th>';
+              content += '<td>' + response.data[i].link + '</td>';
+              content += '<td>' + response.data[i].status + '</td>';
+              content += '<td><label onclick="delete(' + response.data[i].id + ')">delete</label></td>';
               content += '</tr>';
             }
 
@@ -82,7 +116,6 @@
       }
 
       function runScript(e) {
-          //See notes about 'which' and 'key'
           if (e.keyCode == 13) {
               add()
 
