@@ -27,7 +27,13 @@ func (siteRepo *SiteRepo) All() []Site {
 }
 
 func (siteRepo *SiteRepo) Create(site Site) *Site {
-	site.ID = len(siteRepo.Sites) + 1
+	if len(siteRepo.Sites) == 0 {
+		site.ID = 1
+	} else {
+		lastSite := siteRepo.Sites[len(siteRepo.Sites)-1]
+		site.ID = lastSite.ID + 1
+	}
+
 	siteRepo.Sites = append(siteRepo.Sites, site)
 	return &site
 }
