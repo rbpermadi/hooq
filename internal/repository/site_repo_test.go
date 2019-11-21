@@ -7,7 +7,8 @@ import (
 )
 
 func TestSiteRepo_All(t *testing.T) {
-	siteRepo := repository.SiteRepo{}
+	var siteRepo repository.ISiteRepo
+	siteRepo = &repository.SiteRepo{}
 
 	// test when data null
 	t.Run("data null", func(t *testing.T) {
@@ -44,7 +45,8 @@ func TestSiteRepo_All(t *testing.T) {
 }
 
 func TestSiteRepo_Create(t *testing.T) {
-	siteRepo := repository.SiteRepo{}
+	var siteRepo repository.ISiteRepo
+	siteRepo = &repository.SiteRepo{}
 
 	newSite := repository.Site{
 		Link:   "http://google.com",
@@ -59,7 +61,8 @@ func TestSiteRepo_Create(t *testing.T) {
 }
 
 func TestSiteRepo_Update(t *testing.T) {
-	siteRepo := repository.SiteRepo{}
+	var siteRepo repository.ISiteRepo
+	siteRepo = &repository.SiteRepo{}
 
 	newSite := repository.Site{
 		Link:   "http://google.com",
@@ -96,7 +99,8 @@ func TestSiteRepo_Update(t *testing.T) {
 }
 
 func TestSiteRepo_Delete(t *testing.T) {
-	siteRepo := repository.SiteRepo{}
+	var siteRepo repository.ISiteRepo
+	siteRepo = &repository.SiteRepo{}
 
 	newSite := repository.Site{
 		Link:   "http://google.com",

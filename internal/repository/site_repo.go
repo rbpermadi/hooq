@@ -13,6 +13,7 @@ type ISiteRepo interface {
 	All() []Site
 	Create(Site) *Site
 	Update(int, Site) (*Site, error)
+	Delete(int) error
 }
 
 type SiteRepo struct {
